@@ -7,40 +7,77 @@ using System.Linq;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+    private const int _countCells = 9;
 
-    [SerializeField] private Button[] _crossZero;
+    private List<Cell> _cells = new List<Cell>();
 
-    [SerializeField] private List<Cell> _cells;
+    private int[,] _variants = new int[8, 3]
+    {
+        {0,1,2 },
+        {3,4,5 },
+        {6,7,8 },
+        {0,3,6 },
+        {1,4,7 },
+        {2,5,8 },
+        {0,4,8 },
+        {2,4,6 },
+    };
 
     private void Start()
     {
-        foreach (var cell in _cells)
+        for (int i = 0; i < _countCells; i++)
         {
-            cell.Subscribe((callbackCell) =>
-            {
-                //Здесь происходит обработка нажатой ячейки!
-                //Выведи потом этут лямбду функции в отдельный метод!
-            });
+            FactoryCell.Instance.CreateCell();
         }
     }
 
-
-
-    public void TrackingProgress(int id)
+    private void NextPlayer()
     {
-        _crossZero[id].enabled = false;
+
     }
 
-    public void CheckLocate(bool isLocate)
+    private void CheckVariantWinToCells()
     {
-        foreach (var step in _crossZero)
+        for (int i = 0; i < 8; i++)
         {
-            if (isLocate == true)
+            var tempCells = new List<Cell>();
+            for (int j = 0; j < 3; j++)
             {
-                //если ячейка занята, то туда нельзя сходить и у индекса будет выключен enable 
-                step.interactable = false;
-                Debug.Log("Нельзя поставить");
+                tempCells.Add(_cells[_variants[i, j]]);
+            }
+
+            foreach (var tempCell in tempCells)
+            {
+                //if ()
+                //{
+                //    Debug.Log("ВЫ ВЫИГРАЛИ");
+                //}
+                //else
+                //{
+                //    Debug.Log("ВЫ ПРОИГРАЛИ");
+                //}
             }
         }
     }
+
+    // void SetGameMode(TypeMode type)
+
+    //enum TypeMode {OneXFriend, OneXBot}
+
+    //void EndGame();
+
+    //void StartGame();
+
+    //public void CheckLocate(bool isLocate)
+    //{
+    //    foreach (var step in _crossZero)
+    //    {
+    //        if (isLocate == true)
+    //        {
+    //            //если ячейка занята, то туда нельзя сходить и у индекса будет выключен enable 
+    //            step.interactable = false;
+    //            Debug.Log("Нельзя поставить");
+    //        }
+    //    }
+    //}
 }

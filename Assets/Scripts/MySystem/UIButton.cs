@@ -9,14 +9,26 @@ public class UIButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, I
 {
     private bool _isPointerDown = false;
     private bool _isPointerEnter = false;
+
+    private Action _callbackClick;
     public void OnPointerDown(PointerEventData pointerEventData)
     {
         _isPointerDown = true;
     }
 
+    public void Subscribe(Action callback)
+    {
+        _callbackClick += callback;
+    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         _isPointerEnter = true;
+    }
+
+    internal void UnSubscribe(Action callback)
+    {
+        _callbackClick -= callback;
     }
 
     public void OnPointerExit(PointerEventData eventData)
@@ -34,6 +46,7 @@ public class UIButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, I
     {
         if (_isPointerEnter == true)
         {
+            _callbackClick?.Invoke();
             Debug.Log("Click");
         }
     }
