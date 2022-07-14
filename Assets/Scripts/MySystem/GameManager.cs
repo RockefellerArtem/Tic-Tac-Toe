@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] private TMP_Text _currentPlayerText;
+
     public static GameManager Instance;
     private const int _countCells = 9;
+
+    private TypeItem _currentType;
 
     private List<Cell> _cells = new List<Cell>();
 
@@ -27,8 +32,34 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < _countCells; i++)
         {
-            FactoryCell.Instance.CreateCell();
+            var cell = FactoryCell.Instance.CreateCell();
+            cell.Subscribe(HandlerCell);
+            _cells.Add(cell);
         }
+        StartGame();
+    }
+
+    private void SetFirstPlayer()
+    {
+        var random = Random.Range(0, 9999);
+
+        //_currentPlayerText.text = (random % 2) == 0 ? "Ходит Крестик" :  "Ходит Нолик";
+
+        if (random % 2 == 0)
+        {
+            _currentType = TypeItem.Cross;
+            _currentPlayerText.text = "Ходит Крестик";
+        }
+        else
+        {
+            _currentType = TypeItem.Zero;
+            _currentPlayerText.text = "Ходит Нолик";
+        }
+    }
+
+    private void HandlerCell(Cell cell)
+    {
+
     }
 
     private void NextPlayer()
@@ -56,6 +87,8 @@ public class GameManager : MonoBehaviour
                 //{
                 //    Debug.Log("ВЫ ПРОИГРАЛИ");
                 //}
+
+                //после победы искать нового первого игрока
             }
         }
     }
@@ -64,9 +97,16 @@ public class GameManager : MonoBehaviour
 
     //enum TypeMode {OneXFriend, OneXBot}
 
-    //void EndGame();
+    private void StartGame()
+    {
+        SetFirstPlayer();
+    }
 
-    //void StartGame();
+    private void EndGame()
+    {
+        //перед
+    }
+
 
     //public void CheckLocate(bool isLocate)
     //{

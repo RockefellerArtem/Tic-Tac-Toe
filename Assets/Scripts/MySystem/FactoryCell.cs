@@ -10,10 +10,12 @@ public class FactoryCell : MonoBehaviour
     [SerializeField] private Cell _cell;
 
     private void Awake() => Instance = this;
-    public void CreateCell()
+    public Cell CreateCell()
     {
         var cell = Instantiate(_cell, _content);
         cell.Init();
+
+        return cell;
     }
 
 }

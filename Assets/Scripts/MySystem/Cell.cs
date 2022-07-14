@@ -8,7 +8,6 @@ public class Cell : MonoBehaviour
 {
     [SerializeField] private Image _icon;
 
-    private Image _itemIcon = default;
     private UIButton _button = default;
 
     private Player _busyPlayer = default;
@@ -33,7 +32,6 @@ public class Cell : MonoBehaviour
     public void Init()
     {
         _button = GetComponent<UIButton>();
-        _itemIcon = GetComponentInChildren<Image>();
         _button.Subscribe(ClickCell);
     }
 
