@@ -7,10 +7,14 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private TMP_Text _currentPlayerText;
+    [Header("Load window")]
+    [SerializeField] private GameObject _menu;
+    [SerializeField] private GameObject _game;
 
     public static GameManager Instance;
     private const int _countCells = 9;
+
+    [SerializeField] private ButtonMode[] _modeButtons;
 
     private TypeItem _currentType;
 
@@ -36,6 +40,11 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        foreach (var modeButton in _modeButtons)
+        {
+            modeButton.SubcribeButtonMode(Select);
+        }
+
         for (int i = 0; i < _countCells; i++)
         {
             var cell = FactoryCell.Instance.CreateCell();
@@ -43,6 +52,20 @@ public class GameManager : MonoBehaviour
             _cells.Add(cell);
         }
         StartGame();
+    }
+
+    public void Select(ButtonMode sender)
+    {
+        foreach (var modeButton in _modeButtons)
+        {
+            modeButton.SetOutline(modeButton == sender);
+        }
+    }
+
+    public void Enable()
+    {
+        _menu.SetActive(false);
+        _game.SetActive(true);
     }
 
     private void SetFirstPlayer()
@@ -53,12 +76,10 @@ public class GameManager : MonoBehaviour
         if (randomIndexType)
         {
             _currentType = TypeItem.Cross;
-            _currentPlayerText.text = "Ходит Крестик";
         }
         else
         {
             _currentType = TypeItem.Zero;
-            _currentPlayerText.text = "Ходит Нолик";
         }
     }
 
@@ -83,12 +104,10 @@ public class GameManager : MonoBehaviour
         if ((int)_currentType == 0)
         {
             _currentType = TypeItem.Cross;
-            _currentPlayerText.text = "Ходит Крестик";
         }
         else
         {
             _currentType = TypeItem.Zero;
-            _currentPlayerText.text = "Ходит Нолик";
         }
     }
 
