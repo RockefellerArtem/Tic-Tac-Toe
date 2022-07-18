@@ -14,6 +14,12 @@ public class GameManager : MonoBehaviour
 
     private TypeItem _currentType;
 
+    private TypeItem[] _typeItems = new TypeItem[2]
+    {
+        TypeItem.Zero,
+        TypeItem.Cross
+    };
+
     private List<Cell> _cells = new List<Cell>();
 
     private int[,] _variants = new int[8, 3]
@@ -42,10 +48,9 @@ public class GameManager : MonoBehaviour
     private void SetFirstPlayer()
     {
         var random = Random.Range(0, 9999);
+        var randomIndexType = random % 2 == 0;
 
-        //_currentPlayerText.text = (random % 2) == 0 ? "Ходит Крестик" :  "Ходит Нолик";
-
-        if (random % 2 == 0)
+        if (randomIndexType)
         {
             _currentType = TypeItem.Cross;
             _currentPlayerText.text = "Ходит Крестик";
@@ -59,12 +64,32 @@ public class GameManager : MonoBehaviour
 
     private void HandlerCell(Cell cell)
     {
+        cell.SetSprite(_currentType);
 
+        NextPlayer();
     }
 
     private void NextPlayer()
     {
+        var currentIndexPlayer = (int)_currentType;
+        foreach (var typeItem in _typeItems)
+        {
+            if ((int)typeItem != currentIndexPlayer)
+            {
+                _currentType = typeItem;
+            }
+        }
 
+        if ((int)_currentType == 0)
+        {
+            _currentType = TypeItem.Cross;
+            _currentPlayerText.text = "Ходит Крестик";
+        }
+        else
+        {
+            _currentType = TypeItem.Zero;
+            _currentPlayerText.text = "Ходит Нолик";
+        }
     }
 
     private void CheckVariantWinToCells()

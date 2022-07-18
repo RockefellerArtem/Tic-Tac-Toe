@@ -1,6 +1,6 @@
 
-public enum TypeItem 
+public enum TypeItem : int
 {
-    Cross,
-    Zero
+    Cross = 0,
+    Zero = 1
 }
