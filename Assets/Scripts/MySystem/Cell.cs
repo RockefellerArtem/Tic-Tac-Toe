@@ -14,12 +14,14 @@ public class Cell : MonoBehaviour
 
     private UIButton _button = default;
 
-    private Player _busyPlayer = default;
     public Action<Cell> CallbackEvent { get; set; }
 
     private void ClickCell()
     {
-        if (_busyPlayer != null) return;
+        if (_icon == true)
+        {
+            _button.enabled = false;
+        }
 
         _icon.gameObject.SetActive(true);
 
@@ -37,8 +39,6 @@ public class Cell : MonoBehaviour
         {
             _icon.sprite = _zero;
         }
-
-
     }
 
     public void Init()

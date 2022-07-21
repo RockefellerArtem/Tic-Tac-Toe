@@ -87,6 +87,9 @@ public class GameManager : MonoBehaviour
     {
         cell.SetSprite(_currentType);
 
+        Debug.Log("CheckWin");
+        CheckVariantWinToCells();
+
         NextPlayer();
     }
 
@@ -150,18 +153,4 @@ public class GameManager : MonoBehaviour
     {
         //перед
     }
-
-
-    //public void CheckLocate(bool isLocate)
-    //{
-    //    foreach (var step in _crossZero)
-    //    {
-    //        if (isLocate == true)
-    //        {
-    //            //если ячейка занята, то туда нельзя сходить и у индекса будет выключен enable 
-    //            step.interactable = false;
-    //            Debug.Log("Нельзя поставить");
-    //        }
-    //    }
-    //}
 }
