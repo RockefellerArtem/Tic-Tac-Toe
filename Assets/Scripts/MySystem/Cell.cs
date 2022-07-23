@@ -12,6 +12,8 @@ public class Cell : MonoBehaviour
     [SerializeField] private Sprite _cross;
     [SerializeField] private Sprite _zero;
 
+    public TypeItem Type { get; private set; }
+
     private UIButton _button = default;
 
     public Action<Cell> CallbackEvent { get; set; }
@@ -23,26 +25,38 @@ public class Cell : MonoBehaviour
             _button.enabled = false;
         }
 
-        _icon.gameObject.SetActive(true);
-
         CallbackEvent?.Invoke(this);
     }
 
     public void SetSprite(TypeItem typeItem)
     {
-        if (typeItem == TypeItem.Cross)
+        _icon.gameObject.SetActive(true);
+
+        switch (typeItem)
         {
-            _icon.sprite = _cross;
+            case TypeItem.Cross:
+                _icon.sprite = _cross;
+                break;
+
+            case TypeItem.Zero:
+                _icon.sprite = _zero;
+                break;
+
+            case TypeItem.Empty:
+                _icon.sprite = null;
+                _icon.gameObject.SetActive(false);
+                break;
+
+            default:
+                break;
         }
 
-        if (typeItem == TypeItem.Zero)
-        {
-            _icon.sprite = _zero;
-        }
+        Type = typeItem;
     }
 
     public void Init()
     {
+        Type = TypeItem.Empty;
         _button = GetComponent<UIButton>();
         _button.Subscribe(ClickCell);
     }

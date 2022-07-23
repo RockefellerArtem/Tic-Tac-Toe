@@ -76,11 +76,15 @@ public class GameManager : MonoBehaviour
         if (randomIndexType)
         {
             _currentType = TypeItem.Cross;
+            
         }
         else
         {
             _currentType = TypeItem.Zero;
         }
+
+        var currentPlayer = _currentType;
+        Debug.Log(currentPlayer);  
     }
 
     private void HandlerCell(Cell cell)
@@ -118,25 +122,35 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < 8; i++)
         {
-            var tempCells = new List<Cell>();
+            bool isCheck = false;
             for (int j = 0; j < 3; j++)
             {
-                tempCells.Add(_cells[_variants[i, j]]);
+                Cell cell = _cells[_variants[i, j]];
+                if (cell.Type != _currentType)
+                {
+                    isCheck = true;
+                    break;
+                }
             }
+            if (isCheck) continue;
+            Debug.Log("победил " + _currentType);
+            ReStart();
+            return;
+        }
 
-            foreach (var tempCell in tempCells)
-            {
-                //if ()
-                //{
-                //    Debug.Log("ВЫ ВЫИГРАЛИ");
-                //}
-                //else
-                //{
-                //    Debug.Log("ВЫ ПРОИГРАЛИ");
-                //}
+        if (_cells.All((t)=> t.Type != TypeItem.Empty))
+        {
+            Debug.Log("Победила дружба");
+            ReStart();
+        }
 
-                //после победы искать нового первого игрока
-            }
+    }
+
+    private void ReStart()
+    {
+        for (int i = 0; i < _cells.Count; i++)
+        {
+            _cells[i].SetSprite(TypeItem.Empty);
         }
     }
 
