@@ -11,6 +11,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject _menu;
     [SerializeField] private GameObject _game;
 
+    [SerializeField] private Sprite _O;
+    [SerializeField] private Sprite _X;
+    [SerializeField] private Sprite _draw;
+
     public static GameManager Instance;
     private const int _countCells = 9;
 
@@ -133,14 +137,34 @@ public class GameManager : MonoBehaviour
                 }
             }
             if (isCheck) continue;
-            Debug.Log("победил " + _currentType);
+
+            switch (_currentType)
+            {
+                case TypeItem.Cross:
+                    Debug.Log("победил X");
+                    
+                    break;
+
+                case TypeItem.Zero:
+                    Debug.Log("победил O");
+                    break;
+
+                case TypeItem.Empty:
+                    Debug.Log("победил ");
+                    break;
+
+                default:
+                    Debug.Log("ничья");
+                    break;
+            }
+            //Debug.Log("победил " + _currentType);
             ReStart();
             return;
         }
 
         if (_cells.All((t)=> t.Type != TypeItem.Empty))
         {
-            Debug.Log("Победила дружба");
+            Debug.Log("Ничья/");
             ReStart();
         }
 
