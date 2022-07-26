@@ -7,18 +7,38 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    [Header("Load window")]
+    [Header("Window")]
     [SerializeField] private GameObject _menu;
     [SerializeField] private GameObject _game;
+    [SerializeField] private GameObject _result;
 
-    [SerializeField] private Sprite _O;
-    [SerializeField] private Sprite _X;
-    [SerializeField] private Sprite _draw;
+    [Header("ControllerResult")]
+    [SerializeField] private TMP_Text _textResult;
+    [SerializeField] private Image _iconResult;
+
+    [Header("ScorePanel")]
+    [SerializeField] private TMP_Text _scoreZero;
+    [SerializeField] private TMP_Text _scoreCross;
+
+
+    [Header("Sprites")]
+    [SerializeField] private Sprite _cross;
+    [SerializeField] private Sprite _zero;
+
+    [SerializeField] private Text _roundText;
+
 
     public static GameManager Instance;
     private const int _countCells = 9;
 
+    private int _countRound = 1;
+
+    private int _scoreX = 0;
+    private int _scoreO = 0;
+
     [SerializeField] private ButtonMode[] _modeButtons;
+
+    private TypeMode _currentMode;
 
     private TypeItem _currentType;
 
@@ -48,14 +68,34 @@ public class GameManager : MonoBehaviour
         {
             modeButton.SubcribeButtonMode(Select);
         }
+    }
 
-        for (int i = 0; i < _countCells; i++)
+    public void Next()
+    {
+        _result.SetActive(false);
+        foreach (var cell in _cells)
         {
-            var cell = FactoryCell.Instance.CreateCell();
-            cell.Subscribe(HandlerCell);
-            _cells.Add(cell);
+            Destroy(cell.gameObject);
         }
+        _cells = new List<Cell>();
         StartGame();
+    }
+
+    public void Menu()
+    {
+        _game.SetActive(false);
+        _result.SetActive(false);
+        _menu.SetActive(true);
+
+        foreach (var cell in _cells)
+        {
+            Destroy(cell.gameObject);
+        }
+        _cells = new List<Cell>();
+
+        _scoreCross.text = $"{_scoreX = 0}";
+        _scoreZero.text = $"{_scoreO = 0}";
+        _roundText.text = $"Раунд {_countRound = 1}";
     }
 
     public void Select(ButtonMode sender)
@@ -64,12 +104,17 @@ public class GameManager : MonoBehaviour
         {
             modeButton.SetOutline(modeButton == sender);
         }
-    }
 
-    public void Enable()
-    {
-        _menu.SetActive(false);
-        _game.SetActive(true);
+        if (sender == _modeButtons[0])
+        {
+            _currentMode = TypeMode.OneXFriend;
+        }
+        if(sender == _modeButtons[1])
+        {
+            _currentMode = TypeMode.OneXBot;
+        }
+
+        sender.SetGameMode(_currentMode);
     }
 
     private void SetFirstPlayer()
@@ -80,7 +125,6 @@ public class GameManager : MonoBehaviour
         if (randomIndexType)
         {
             _currentType = TypeItem.Cross;
-            
         }
         else
         {
@@ -141,30 +185,32 @@ public class GameManager : MonoBehaviour
             switch (_currentType)
             {
                 case TypeItem.Cross:
-                    Debug.Log("победил X");
-                    
+                    _result.SetActive(true);
+                    _textResult.text = "Победил";
+                    _iconResult.sprite = _cross;
+                    _scoreX++;
+                    _scoreCross.text = $"{_scoreX}";
+                    _iconResult.gameObject.SetActive(true);
                     break;
 
                 case TypeItem.Zero:
-                    Debug.Log("победил O");
-                    break;
-
-                case TypeItem.Empty:
-                    Debug.Log("победил ");
-                    break;
-
-                default:
-                    Debug.Log("ничья");
+                    _result.SetActive(true);
+                    _textResult.text = "Победил";
+                    _iconResult.sprite = _zero;
+                    _scoreO++;
+                    _scoreZero.text = $"{_scoreO}";
+                    _iconResult.gameObject.SetActive(true);
                     break;
             }
-            //Debug.Log("победил " + _currentType);
             ReStart();
             return;
         }
 
         if (_cells.All((t)=> t.Type != TypeItem.Empty))
         {
-            Debug.Log("Ничья/");
+            _result.SetActive(true);
+            _iconResult.gameObject.SetActive(false);
+            _textResult.text = " Ничья";
             ReStart();
         }
 
@@ -172,23 +218,26 @@ public class GameManager : MonoBehaviour
 
     private void ReStart()
     {
+        _roundText.text = $"Раунд {++_countRound}";
         for (int i = 0; i < _cells.Count; i++)
         {
             _cells[i].SetSprite(TypeItem.Empty);
         }
     }
 
-    // void SetGameMode(TypeMode type)
+    
 
-    //enum TypeMode {OneXFriend, OneXBot}
-
-    private void StartGame()
+    public void StartGame()
     {
+        for (int i = 0; i < _countCells; i++)
+        {
+            var cell = FactoryCell.Instance.CreateCell();
+            cell.Subscribe(HandlerCell);
+            _cells.Add(cell);
+        }
+        
         SetFirstPlayer();
-    }
-
-    private void EndGame()
-    {
-        //перед
+        _menu.SetActive(false);
+        _game.SetActive(true);
     }
 }

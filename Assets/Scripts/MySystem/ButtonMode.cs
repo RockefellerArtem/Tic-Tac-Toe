@@ -17,6 +17,20 @@ public class ButtonMode : UIButton
         });
     }
 
+
+    public void SetGameMode(TypeMode typeMode)
+    {
+        switch (typeMode)
+        {
+            case TypeMode.OneXFriend:
+                Debug.Log("friend");
+                break;
+            case TypeMode.OneXBot:
+                Debug.Log("bot");
+                break;
+        }
+    }
+
     public void SetOutline(bool isActive)
     {
         _outlineObject.SetActive(isActive);
