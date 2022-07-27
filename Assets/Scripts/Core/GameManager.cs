@@ -77,8 +77,10 @@ public class GameManager : MonoBehaviour
     public void Next()
     {
         _result.SetActive(false);
+
         foreach (var cell in _cells)
         {
+            cell.UnSubscribe();
             Destroy(cell.gameObject);
         }
         _cells = new List<Cell>();
@@ -98,6 +100,8 @@ public class GameManager : MonoBehaviour
         }
 
         SetFirstPlayer();
+
+
     }
 
     public void FriendMode()
@@ -156,82 +160,105 @@ public class GameManager : MonoBehaviour
 
     private void SetFirstPlayer()
     {
-        Debug.Log("Установка первого игрока");
-        var random = Random.Range(0, 9999);
-        var randomIndexType = random % 2 == 0;
-
-        if (_currentMode == TypeMode.OneXFriend)
-        {
-            if (randomIndexType)
-            {
-                _currentType = TypeItem.Cross;
-            }
-            else
-            {
-                _currentType = TypeItem.Zero;
-            }
-        }
-
         if (_currentMode == TypeMode.OneXBot)
         {
-            if (randomIndexType)
+            if (_currentPlayer == TypeItem.Player)
             {
-                _currentType = TypeItem.Bot;
+                _currentPlayer = TypeItem.Bot;
             }
             else
             {
-                _currentType = TypeItem.Player;
+                _currentPlayer = TypeItem.Player;
             }
         }
-        
-        
+
+
         var currentPlayer = _currentType;
-        Debug.Log("Первым игроком будет " + currentPlayer); 
+        Debug.Log("Первым игроком будет " + currentPlayer);
+
+
+        BotStep();
     }
 
     private void HandlerCell(Cell cell)
     {
+        SetActiveCell(false);
         cell.SetSprite(_currentType);
 
         Debug.Log("CheckWin");
         CheckVariantWinToCells();
 
         NextPlayer();
+
+    }
+
+    private IEnumerator DelayStepBot()
+    {
+        yield return new WaitForSeconds(Random.Range(1, 3));
+
+        var cells = new List<Cell>();
+        foreach (var cellTemp in _cells)
+        {
+            if (cellTemp.Type == TypeItem.Empty)
+            {
+                cells.Add(cellTemp);
+            }
+        }
+
+        cells[Random.Range(0, cells.Count - 1)].ClickCell();
     }
 
     private void NextPlayer()
     {
-        var currentIndexPlayer = (int)_currentType;
+
         foreach (var typeItem in _typeItems)
         {
-            if ((int)typeItem != currentIndexPlayer)
+            if(typeItem != _currentType)
             {
                 _currentType = typeItem;
+                break;
             }
         }
 
-        if (_currentMode == TypeMode.OneXFriend)
+        if (_currentMode == TypeMode.OneXBot)
         {
-            if ((int)_currentType == 0)
+            if (_currentPlayer == TypeItem.Player)
             {
-                _currentType = TypeItem.Cross;
+                _currentPlayer = TypeItem.Bot;
             }
-            if ((int)_currentType == 1)
+            else
             {
-                _currentType = TypeItem.Zero;
+                _currentPlayer = TypeItem.Player;
             }
+        }
+
+
+        BotStep();
+
+
+    }
+
+    private Coroutine _botStepCoroutine = null;
+    private void BotStep()
+    {
+        if (_currentPlayer == TypeItem.Bot)
+        {
+            SetActiveCell(false);
+            _botStepCoroutine = StartCoroutine(DelayStepBot());
         }
         else
         {
-            if ((int)_currentType == 3)
-            {
-                _currentType = TypeItem.Bot;
-            }
-            if ((int)_currentType == 4)
-            {
-                _currentType = TypeItem.Player;
-            }
+            SetActiveCell(true);
         }
+    }
+
+    private void SetActiveCell(bool isActive)
+    {
+        foreach (var cell in _cells)
+        {
+            cell.InteractableCell(isActive);
+        }
+
     }
 
     private void CheckVariantWinToCells()
@@ -253,6 +280,10 @@ public class GameManager : MonoBehaviour
             switch (_currentType)
             {
                 case TypeItem.Cross:
+                    if (_botStepCoroutine != null)
+                    {
+                        StopCoroutine(_botStepCoroutine);
+                    }
                     _result.SetActive(true);
                     _textResult.text = "Победил";
                     _iconResult.sprite = _cross;
@@ -262,6 +293,10 @@ public class GameManager : MonoBehaviour
                     break;
 
                 case TypeItem.Zero:
+                    if (_botStepCoroutine != null)
+                    {
+                        StopCoroutine(_botStepCoroutine);
+                    }
                     _result.SetActive(true);
                     _textResult.text = "Победил";
                     _iconResult.sprite = _zero;
@@ -276,6 +311,10 @@ public class GameManager : MonoBehaviour
 
         if (_cells.All((t)=> t.Type != TypeItem.Empty))
         {
+            if (_botStepCoroutine != null)
+            {
+                StopCoroutine(_botStepCoroutine);
+            }
             _result.SetActive(true);
             _iconResult.gameObject.SetActive(false);
             _textResult.text = " Ничья";
@@ -301,13 +340,10 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("Выберите мод!");
         }
+
         if (_currentMode == TypeMode.OneXBot)
         {
             BotMode(); 
-        }
-        if (_currentMode == TypeMode.OneXFriend)
-        {
-            FriendMode();
         }
     }
 }

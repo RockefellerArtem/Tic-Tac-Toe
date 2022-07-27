@@ -18,7 +18,7 @@ public class Cell : MonoBehaviour
 
     public Action<Cell> CallbackEvent { get; set; }
 
-    private void ClickCell()
+    public void ClickCell()
     {
         if (_icon == true)
         {
@@ -26,6 +26,11 @@ public class Cell : MonoBehaviour
         }
 
         CallbackEvent?.Invoke(this);
+    }
+
+    public void InteractableCell(bool isActive)
+    {
+        _button.enabled = isActive;
     }
 
     public void SetSprite(TypeItem typeItem)
@@ -39,19 +44,6 @@ public class Cell : MonoBehaviour
                 break;
 
             case TypeItem.Zero:
-                _icon.sprite = _zero;
-                break;
-
-            case TypeItem.Empty:
-                _icon.sprite = null;
-                _icon.gameObject.SetActive(false);
-                break;
-
-            case TypeItem.Bot:
-                _icon.sprite = _cross;
-                break;
-
-            case TypeItem.Player:
                 _icon.sprite = _zero;
                 break;
         }
@@ -69,5 +61,9 @@ public class Cell : MonoBehaviour
     public void Subscribe(Action<Cell> callback)
     {
         CallbackEvent = callback;
+    }
+    public void UnSubscribe()
+    {
+        CallbackEvent = null;
     }
 }
