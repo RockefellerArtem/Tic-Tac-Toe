@@ -16,8 +16,6 @@ public class Cell : MonoBehaviour
 
     private UIButton _button = default;
 
-    private bool _isClick = true;
-
     public Action<Cell> CallbackEvent { get; set; }
 
     private void ClickCell()
@@ -38,21 +36,23 @@ public class Cell : MonoBehaviour
         {
             case TypeItem.Cross:
                 _icon.sprite = _cross;
-                _isClick = false;
                 break;
 
             case TypeItem.Zero:
                 _icon.sprite = _zero;
-                _isClick = false;
                 break;
 
             case TypeItem.Empty:
-                _isClick = true;
                 _icon.sprite = null;
                 _icon.gameObject.SetActive(false);
                 break;
 
-            default:
+            case TypeItem.Bot:
+                _icon.sprite = _cross;
+                break;
+
+            case TypeItem.Player:
+                _icon.sprite = _zero;
                 break;
         }
 

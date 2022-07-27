@@ -7,6 +7,8 @@ public class ButtonMode : UIButton
 {
     [SerializeField] private GameObject _outlineObject;
 
+    public TypeMode TypeMode { get; private set; }
+
     private Action<ButtonMode> _callback;
 
     private void Start()
@@ -15,20 +17,6 @@ public class ButtonMode : UIButton
         { 
             _callback?.Invoke(this);
         });
-    }
-
-
-    public void SetGameMode(TypeMode typeMode)
-    {
-        switch (typeMode)
-        {
-            case TypeMode.OneXFriend:
-                Debug.Log("friend");
-                break;
-            case TypeMode.OneXBot:
-                Debug.Log("bot");
-                break;
-        }
     }
 
     public void SetOutline(bool isActive)

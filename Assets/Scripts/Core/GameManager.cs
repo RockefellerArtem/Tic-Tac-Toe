@@ -42,6 +42,8 @@ public class GameManager : MonoBehaviour
 
     private TypeItem _currentType;
 
+    private TypeItem _currentPlayer;
+
     private TypeItem[] _typeItems = new TypeItem[2]
     {
         TypeItem.Zero,
@@ -68,6 +70,8 @@ public class GameManager : MonoBehaviour
         {
             modeButton.SubcribeButtonMode(Select);
         }
+
+        _currentMode = TypeMode.Empty;
     }
 
     public void Next()
@@ -79,6 +83,35 @@ public class GameManager : MonoBehaviour
         }
         _cells = new List<Cell>();
         StartGame();
+    }
+
+    public void BotMode()
+    {
+        _menu.SetActive(false);
+        _game.SetActive(true);
+
+        for (int i = 0; i < _countCells; i++)
+        {
+            var cell = FactoryCell.Instance.CreateCell();
+            cell.Subscribe(HandlerCell);
+            _cells.Add(cell);
+        }
+
+        SetFirstPlayer();
+    }
+
+    public void FriendMode()
+    {
+        _menu.SetActive(false);
+        _game.SetActive(true);
+
+        for (int i = 0; i < _countCells; i++)
+        {
+            var cell = FactoryCell.Instance.CreateCell();
+            cell.Subscribe(HandlerCell);
+            _cells.Add(cell);
+        }
+        SetFirstPlayer();
     }
 
     public void Menu()
@@ -96,6 +129,12 @@ public class GameManager : MonoBehaviour
         _scoreCross.text = $"{_scoreX = 0}";
         _scoreZero.text = $"{_scoreO = 0}";
         _roundText.text = $"Раунд {_countRound = 1}";
+
+        _currentMode = TypeMode.Empty;
+        foreach (var modeButton in _modeButtons)
+        {
+            modeButton.SetOutline(false);
+        }
     }
 
     public void Select(ButtonMode sender)
@@ -113,26 +152,41 @@ public class GameManager : MonoBehaviour
         {
             _currentMode = TypeMode.OneXBot;
         }
-
-        sender.SetGameMode(_currentMode);
     }
 
     private void SetFirstPlayer()
     {
+        Debug.Log("Установка первого игрока");
         var random = Random.Range(0, 9999);
         var randomIndexType = random % 2 == 0;
 
-        if (randomIndexType)
+        if (_currentMode == TypeMode.OneXFriend)
         {
-            _currentType = TypeItem.Cross;
-        }
-        else
-        {
-            _currentType = TypeItem.Zero;
+            if (randomIndexType)
+            {
+                _currentType = TypeItem.Cross;
+            }
+            else
+            {
+                _currentType = TypeItem.Zero;
+            }
         }
 
+        if (_currentMode == TypeMode.OneXBot)
+        {
+            if (randomIndexType)
+            {
+                _currentType = TypeItem.Bot;
+            }
+            else
+            {
+                _currentType = TypeItem.Player;
+            }
+        }
+        
+        
         var currentPlayer = _currentType;
-        Debug.Log(currentPlayer);  
+        Debug.Log("Первым игроком будет " + currentPlayer); 
     }
 
     private void HandlerCell(Cell cell)
@@ -156,13 +210,27 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if ((int)_currentType == 0)
+        if (_currentMode == TypeMode.OneXFriend)
         {
-            _currentType = TypeItem.Cross;
+            if ((int)_currentType == 0)
+            {
+                _currentType = TypeItem.Cross;
+            }
+            if ((int)_currentType == 1)
+            {
+                _currentType = TypeItem.Zero;
+            }
         }
         else
         {
-            _currentType = TypeItem.Zero;
+            if ((int)_currentType == 3)
+            {
+                _currentType = TypeItem.Bot;
+            }
+            if ((int)_currentType == 4)
+            {
+                _currentType = TypeItem.Player;
+            }
         }
     }
 
@@ -229,15 +297,17 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        for (int i = 0; i < _countCells; i++)
+        if (_currentMode == TypeMode.Empty)
         {
-            var cell = FactoryCell.Instance.CreateCell();
-            cell.Subscribe(HandlerCell);
-            _cells.Add(cell);
+            Debug.Log("Выберите мод!");
         }
-        
-        SetFirstPlayer();
-        _menu.SetActive(false);
-        _game.SetActive(true);
+        if (_currentMode == TypeMode.OneXBot)
+        {
+            BotMode(); 
+        }
+        if (_currentMode == TypeMode.OneXFriend)
+        {
+            FriendMode();
+        }
     }
 }

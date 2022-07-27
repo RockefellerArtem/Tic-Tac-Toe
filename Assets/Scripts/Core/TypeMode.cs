@@ -5,5 +5,6 @@ using UnityEngine;
 public enum TypeMode 
 {
     OneXFriend,
-    OneXBot
+    OneXBot,
+    Empty 
 }
