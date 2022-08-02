@@ -12,21 +12,26 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject _game;
     [SerializeField] private GameObject _result;
 
+    [SerializeField] private TMP_Text _resultDrawText;
+    [SerializeField] private TMP_Text _resultWinText;
+
     [Header("ControllerResult")]
     [SerializeField] private TMP_Text _textResult;
     [SerializeField] private Image _iconResult;
+    [SerializeField] private Image _iconWin;
+
+    [Header("ControllerPanelCurrentPlayer")]
+    [SerializeField] private Image _currentImage;
 
     [Header("ScorePanel")]
     [SerializeField] private TMP_Text _scoreZero;
     [SerializeField] private TMP_Text _scoreCross;
-
 
     [Header("Sprites")]
     [SerializeField] private Sprite _cross;
     [SerializeField] private Sprite _zero;
 
     [SerializeField] private Text _roundText;
-
 
     public static GameManager Instance;
     private const int _countCells = 9;
@@ -74,6 +79,37 @@ public class GameManager : MonoBehaviour
         _currentMode = TypeMode.Empty;
     }
 
+    private void Update()
+    {
+        ControllerPanelCurrentPlayer();
+    }
+
+    private void ControllerPanelCurrentPlayer()
+    {
+        if (_currentMode == TypeMode.OneXFriend)
+        {
+            if (_currentType == TypeItem.Cross)
+            {
+                _currentImage.sprite = _cross;
+            }
+            else
+            {
+                _currentImage.sprite = _zero;
+            }
+        }
+        if (_currentMode == TypeMode.OneXBot)
+        {
+            if (_currentType == TypeItem.Cross)
+            {
+                _currentImage.sprite = _cross;
+            }
+            else
+            {
+                _currentImage.sprite = _zero;
+            }
+        }
+    }
+
     public void Next()
     {
         _result.SetActive(false);
@@ -100,8 +136,6 @@ public class GameManager : MonoBehaviour
         }
 
         SetFirstPlayer();
-
-
     }
 
     public void FriendMode()
@@ -172,10 +206,8 @@ public class GameManager : MonoBehaviour
             }
         }
 
-
         var currentPlayer = _currentType;
         Debug.Log("Первым игроком будет " + currentPlayer);
-
 
         BotStep();
     }
@@ -183,6 +215,7 @@ public class GameManager : MonoBehaviour
     private void HandlerCell(Cell cell)
     {
         SetActiveCell(false);
+        
         cell.SetSprite(_currentType);
 
         Debug.Log("CheckWin");
@@ -210,7 +243,6 @@ public class GameManager : MonoBehaviour
 
     private void NextPlayer()
     {
-
         foreach (var typeItem in _typeItems)
         {
             if(typeItem != _currentType)
@@ -231,7 +263,6 @@ public class GameManager : MonoBehaviour
                 _currentPlayer = TypeItem.Player;
             }
         }
-
 
         BotStep();
 
@@ -290,6 +321,9 @@ public class GameManager : MonoBehaviour
                     _scoreX++;
                     _scoreCross.text = $"{_scoreX}";
                     _iconResult.gameObject.SetActive(true);
+                    _iconWin.gameObject.SetActive(true);
+                    _resultWinText.gameObject.SetActive(true);
+                    _resultDrawText.gameObject.SetActive(false);
                     break;
 
                 case TypeItem.Zero:
@@ -303,6 +337,9 @@ public class GameManager : MonoBehaviour
                     _scoreO++;
                     _scoreZero.text = $"{_scoreO}";
                     _iconResult.gameObject.SetActive(true);
+                    _iconWin.gameObject.SetActive(true);
+                    _resultWinText.gameObject.SetActive(true);
+                    _resultDrawText.gameObject.SetActive(false);
                     break;
             }
             ReStart();
@@ -316,8 +353,10 @@ public class GameManager : MonoBehaviour
                 StopCoroutine(_botStepCoroutine);
             }
             _result.SetActive(true);
+            _iconWin.gameObject.SetActive(false);
+            _resultDrawText.gameObject.SetActive(true);
             _iconResult.gameObject.SetActive(false);
-            _textResult.text = " Ничья";
+            _resultWinText.gameObject.SetActive(false);
             ReStart();
         }
 
@@ -332,8 +371,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    
-
     public void StartGame()
     {
         if (_currentMode == TypeMode.Empty)
@@ -344,6 +381,11 @@ public class GameManager : MonoBehaviour
         if (_currentMode == TypeMode.OneXBot)
         {
             BotMode(); 
+        }
+
+        if(_currentMode == TypeMode.OneXFriend)
+        {
+            FriendMode();
         }
     }
 }

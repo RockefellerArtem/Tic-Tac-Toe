@@ -12,6 +12,8 @@ public class Cell : MonoBehaviour
     [SerializeField] private Sprite _cross;
     [SerializeField] private Sprite _zero;
 
+    private bool _isClick = true;
+
     public TypeItem Type { get; private set; }
 
     private UIButton _button = default;
@@ -20,11 +22,10 @@ public class Cell : MonoBehaviour
 
     public void ClickCell()
     {
-        if (_icon == true)
+        if (_isClick)
         {
             _button.enabled = false;
         }
-
         CallbackEvent?.Invoke(this);
     }
 
