@@ -216,18 +216,19 @@ public class GameManager : MonoBehaviour
                 _currentPlayer = TypeItem.Player;
                 _currentType = TypeItem.Cross;
             }
+            BotStep();
         }
 
         var currentPlayer = _currentType;
         Debug.Log("Первым игроком будет " + currentPlayer);
-
-        BotStep();
     }
 
     private void HandlerCell(Cell cell)
     {
-        SetActiveCell(false);
-        
+        if (cell.Type != TypeItem.Empty)
+        {
+            return;
+        }
         cell.SetSprite(_currentType);
 
         Debug.Log("CheckWin");
@@ -248,8 +249,7 @@ public class GameManager : MonoBehaviour
                 cells.Add(cellTemp);
             }
         }
-
-        cells[Random.Range(0, cells.Count - 1)].ClickCell();
+        if(_currentPlayer == TypeItem.Bot) cells[Random.Range(0, cells.Count - 1)].ClickCell();
     }
 
     private void NextPlayer()
@@ -273,9 +273,9 @@ public class GameManager : MonoBehaviour
             {
                 _currentPlayer = TypeItem.Player;
             }
-        }
+            BotStep();
 
-        BotStep();
+        }
     }
 
     private Coroutine _botStepCoroutine = null;
@@ -377,6 +377,8 @@ public class GameManager : MonoBehaviour
         {
             _cells[i].SetSprite(TypeItem.Empty);
         }
+
+        SetFirstPlayer();
     }
 
     public void StartGame()
@@ -395,5 +397,7 @@ public class GameManager : MonoBehaviour
         {
             FriendMode();
         }
+
+        
     }
 }

@@ -1177,15 +1177,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 1
-    m_Right: 0
-    m_Top: 86
+    m_Left: 14
+    m_Right: -2
+    m_Top: 23
     m_Bottom: 0
   m_ChildAlignment: 1
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 100, y: 100}
-  m_Spacing: {x: 114.51, y: 112.44}
+  m_CellSize: {x: 150, y: 150}
+  m_Spacing: {x: 81, y: 103}
   m_Constraint: 0
   m_ConstraintCount: 2
 --- !u!1 &633341562
@@ -4504,7 +4504,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -53.54, y: -0.26000214}
+  m_AnchoredPosition: {x: -53.54001, y: -0.26000214}
   m_SizeDelta: {x: 227.6, y: 78.721}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1996000949
