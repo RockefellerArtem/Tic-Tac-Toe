@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
 
     [Header("ControllerPanelCurrentPlayer")]
     [SerializeField] private Image _currentImage;
+    [SerializeField] protected TMP_Text _currentText;
 
     [Header("ScorePanel")]
     [SerializeField] private TMP_Text _scoreZero;
@@ -88,6 +89,7 @@ public class GameManager : MonoBehaviour
     {
         if (_currentMode == TypeMode.OneXFriend)
         {
+            _currentImage.gameObject.SetActive(true);
             if (_currentType == TypeItem.Cross)
             {
                 _currentImage.sprite = _cross;
@@ -99,12 +101,19 @@ public class GameManager : MonoBehaviour
         }
         if (_currentMode == TypeMode.OneXBot)
         {
-            if (_currentType == TypeItem.Cross)
+            _currentImage.gameObject.SetActive(false);
+            _currentText.gameObject.SetActive(true);
+            
+            if (_currentPlayer == TypeItem.Player)
             {
+                _currentText.text = "Вы";
+                _currentType = TypeItem.Cross;
                 _currentImage.sprite = _cross;
             }
-            else
+            if(_currentPlayer == TypeItem.Bot)
             {
+                _currentText.text = "Бот";
+                _currentType = TypeItem.Zero;
                 _currentImage.sprite = _zero;
             }
         }
@@ -140,6 +149,7 @@ public class GameManager : MonoBehaviour
 
     public void FriendMode()
     {
+        _currentText.gameObject.SetActive(false);
         _menu.SetActive(false);
         _game.SetActive(true);
 
@@ -199,10 +209,12 @@ public class GameManager : MonoBehaviour
             if (_currentPlayer == TypeItem.Player)
             {
                 _currentPlayer = TypeItem.Bot;
+                _currentType = TypeItem.Zero;
             }
             else
             {
                 _currentPlayer = TypeItem.Player;
+                _currentType = TypeItem.Cross;
             }
         }
 
@@ -222,7 +234,6 @@ public class GameManager : MonoBehaviour
         CheckVariantWinToCells();
 
         NextPlayer();
-
     }
 
     private IEnumerator DelayStepBot()
@@ -265,8 +276,6 @@ public class GameManager : MonoBehaviour
         }
 
         BotStep();
-
-
     }
 
     private Coroutine _botStepCoroutine = null;
@@ -289,7 +298,6 @@ public class GameManager : MonoBehaviour
         {
             cell.InteractableCell(isActive);
         }
-
     }
 
     private void CheckVariantWinToCells()
